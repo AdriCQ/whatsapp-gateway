@@ -1,0 +1,20 @@
+services:
+  bot:
+    build: .
+    container_name: ${APP_NAME}
+    env_file:
+      - .env
+      - .env.local
+    ports:
+      - "${APP_PORT}:3000"
+    volumes:
+      - ./bot_sessions:/app/bot_sessions
+    cap_add:
+      - SYS_ADMIN
+    restart: always
+    networks:
+      - public-network
+
+networks:
+  public-network:
+    external: true
