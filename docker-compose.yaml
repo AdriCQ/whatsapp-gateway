@@ -4,7 +4,6 @@ services:
     container_name: ${APP_NAME}
     env_file:
       - .env
-      - .env.local
     ports:
       - "${APP_PORT}:3000"
     volumes:
