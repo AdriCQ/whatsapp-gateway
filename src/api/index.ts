@@ -5,8 +5,7 @@ import type {IncomingMessage as IncomingMessageHttp, ServerResponse} from 'http'
 interface IncomingMessage extends IncomingMessageHttp {
     body: {
         phoneNumber: string
-        message: string
-        urlMedia?: string
+        messages: Array<{text: string; urlMedia?: string}>
         secret: string
     }
 }
@@ -15,14 +14,16 @@ export default function (provider: Provider, handleCtx: any) {
     provider.server.post(
         '/v1/messages',
         handleCtx(async (bot, req: IncomingMessage, res: ServerResponse) => {
-            const {phoneNumber, message, urlMedia, secret} = req.body
+            const {phoneNumber, messages, secret} = req.body
             if (!validateToken(secret)) {
                 res.statusCode = 401
                 return res.end('unauthorized')
             }
 
-            await bot.sendMessage(phoneNumber, message, {media: urlMedia ?? null})
+            for (const message of messages) {
+                await bot.sendMessage(phoneNumber, message.text, {media: message.urlMedia ?? null})
+            }
             return res.end('ok')
         })
-    )
+    );
 }
